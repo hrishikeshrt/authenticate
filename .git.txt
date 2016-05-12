@@ -1,0 +1,23 @@
+### Adding Repository to both Github and bitbucket
+
+#
+# If original repo was github
+#
+
+git remote rename origin github
+git remote add bitbucket git@bitbucket.org:hrishikeshrt/ironport.git
+
+#
+# If original repo was bitbucket
+#
+
+git remote rename origin bitbucket
+git remote add git@github.com:hrishikeshrt/ironport.git
+
+### Push & Pull
+
+git push github HEAD
+git push bitbucket HEAD
+
+git pull github master
+git pull bitbucket master
