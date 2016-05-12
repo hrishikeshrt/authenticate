@@ -29,7 +29,7 @@ var detail_box = document.getElementById('details');
 
 // fetch IP
 
-GetIPURL = 'http://home.iitk.ac.in/~hrishirt/ip/'
+GetIPURL = 'http://home.iitk.ac.in/~hrishirt/ip/';
 IP = "";
 getIP(GetIPURL);
 
@@ -195,12 +195,12 @@ function resetLoginDetails () {
 function getLoginDetails() {
   if (!GM_getValue("IITK_User")) {
     ans_user = prompt("Enter IITK Username: ","");
-    if (ans_user) { GM_setValue("IITK_User",ans_user) }
+    if (ans_user) { GM_setValue("IITK_User",ans_user); }
     else getLoginDetails();
   }
   if (!GM_getValue("IITK_Pass")) {
     ans_pass = prompt("Enter IITK Password for '"+GM_getValue("IITK_User")+"' : ","");
-    if (ans_pass) { GM_setValue("IITK_Pass",ans_pass) }
+    if (ans_pass) { GM_setValue("IITK_Pass",ans_pass); }
     else getLoginDetails();
   }
 }
