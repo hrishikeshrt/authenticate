@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/sh
 
 # For OpenWRT
 export ip="" # local WAN ip of router
@@ -9,14 +9,16 @@ export authurl2='https://ironport2.iitk.ac.in/B0001D0000N0000N0000F0000S0000R000
 
 export user=""
 export pass=""
-
 export refresh='5'
 
+log() {
+ export ts="`date +[%b\ %e\ %H:%M:%S]`"
+ echo $ts $@
+ logger -t IronPort $@
+}
 
 while true; do
-  
   refresh=5
-
   # Cisco Authentication
   curl -s --form "sid=0" --form "login='Log In Now'" $refurl  > /dev/null 2> /dev/null
 
@@ -25,9 +27,9 @@ while true; do
   curl -s --form "username=$user" --form "password=$pass" --form "Login=Continue" --referer $refurl $authurl > /tmp/auth 2> /dev/null
 
   if [ "`cat /tmp/auth | grep 'You are logged in'`" ]; then
-    logger -t IronPort "Auth successful."
+     log "Auth succesful."
   else 
-       logger -t IronPort "Auth failed."
+       log "Auth failed."
        refresh=1
   fi 
   sleep 1
@@ -37,24 +39,25 @@ while true; do
   curl -s --insecure --user "${user}:${pass}" $authurl2 > /tmp/auth2 2> /dev/null
 
   if [ "`cat /tmp/auth1 | grep AUTH_REQUIRED`" ]; then
-    logger -t IronPort "Auth1 failed."
+    log "Auth1 failed."
     refresh=1
   else
     if [ "`cat /tmp/auth1 | grep 'request is being redirected'`" ]; then
-      logger -t IronPort "Auth1 successful."
+      log "Auth1 successful."
     fi
   fi
 
   if [ "`cat /tmp/auth2 | grep AUTH_REQUIRED`" ]; then
-    logger -t IronPort "Auth2 failed."
+    log "Auth2 failed."
     refresh=1
   else
     if [ "`cat /tmp/auth2 | grep 'request is being redirected'`" ]; then
-      logger -t IronPort "Auth2 successful."
+      log "Auth2 successful."
     fi
   fi
 
-  logger -t IronPort "Refreshing in ${refresh} minutes."
+  export futuredate="`date -D '%s' +'[%H:%M:%S]' -d $((\`date +%s\` + ${refresh}*60))`"
+  log "Refreshing at '${futuredate}'"
   sleep $(( ${refresh} * 60 ))
 
 done
