@@ -19,6 +19,8 @@ log() {
 
 while true; do
   refresh=5
+  rm /tmp/auth /tmp/auth1 /tmp/auth2
+
   # Cisco Authentication
   curl -s --form "sid=0" --form "login='Log In Now'" $refurl  > /dev/null 2> /dev/null
 
