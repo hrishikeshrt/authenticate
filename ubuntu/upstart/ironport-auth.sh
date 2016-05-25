@@ -1,5 +1,21 @@
 #!/bin/sh
 
+trap logout 1 2 3 9 15 19 20
+
+log() {
+ export ts="`date +[%b\ %e\ %H:%M:%S]`"
+ echo $ts $@ >> ${LOGFILE}
+ logger -t IronPort $@
+}
+
+logout() {
+    curl -s --form "logout='Log Out Now'" $refurl  > /dev/null 2> /dev/null
+    log "Logged out."
+    exit 0
+}
+
+log "Starting ironport-authentication daemon .."
+
 CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"
 [ -f $CONFIG ] || (logger -sit IronPort "No config file found." && exit 1)
@@ -21,12 +37,6 @@ export authurl2='https://ironport2.iitk.ac.in/B0001D0000N0000N0000F0000S0000R000
 
 export refresh='5'
 
-log() {
- export ts="`date +[%b\ %e\ %H:%M:%S]`"
- echo $ts $@ >> ${LOGFILE}
- logger -t IronPort $@
-}
-
 while true; do
     refresh=5
 
@@ -41,8 +51,12 @@ while true; do
     if [ "`echo $cisco | grep 'You are logged in'`" ]; then
         log "Auth succesful."
     else 
-        log "Auth failed."
-        refresh=1
+        if [ "`echo $cisco | grep "Credentials Rejected"`" ]; then
+            log "Error: Credentials rejected."
+        else
+            log "Error: Something went wrong."
+            refresh=1
+        fi
     fi 
     sleep 1
 
@@ -54,20 +68,24 @@ while true; do
         curl -s --insecure --user "${user}:${pass}" $authurl2 --stderr /dev/null
     )
     if [ "`echo $auth1 | grep AUTH_REQUIRED`" ]; then
-        log "Auth1 failed."
+        log "Error: Auth1 failed."
         refresh=1
     else
         if [ "`echo $auth1 | grep 'request is being redirected'`" ]; then
             log "Auth1 successful."
+        else
+            log "Error: `echo $auth1 | grep 'Notification: ' | grep -v '<title>'`"
         fi
     fi
 
     if [ "`echo $auth2 | grep AUTH_REQUIRED`" ]; then
-        log "Auth2 failed."
+        log "Error: Auth2 failed."
         refresh=1
     else
         if [ "`echo $auth2 | grep 'request is being redirected'`" ]; then
             log "Auth2 successful."
+        else
+            log "Error: `echo $auth2 | grep 'Notification: ' | grep -v '<title>'`"
         fi
     fi
 

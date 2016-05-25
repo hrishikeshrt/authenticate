@@ -1,5 +1,15 @@
 #!/bin/sh
 
+trap logout 1 2 3 9 15 19 20
+
+log() {
+    export ts="`date +[%b\ %e\ %H:%M:%S]`"
+    echo $ts $@ >> $LOGFILE
+    logger -t Fortigate $@
+}
+
+log "Starting fortigate-authentication daemon .."
+
 CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"
 [ -f $CONFIG ] || (logger -sit Fortigate "No config file found." && exit 1)
@@ -16,15 +26,6 @@ password="`sed -n '2 p' ${CONFIG}`"
 google="http://216.58.220.3"
 curl_opts="-k -m3 -s --stderr /dev/null"
 
-
-trap logout 1 2 3 15
-
-log() {
-    export ts="`date +[%b\ %e\ %H:%M:%S]`"
-    echo $ts $@ >> $LOGFILE
-    logger -t Fortigate $@
- }
- 
 login() {
     fgt_redirect=$(
         curl ${curl_opts} --max-redirs 0 -D- ${google}
