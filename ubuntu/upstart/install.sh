@@ -78,7 +78,8 @@ uninstall() {
 restart_system() {
     action="uninstall"
     [ $1 ] || action="install"
-    echo "System needs a restart for $action to complete."
+    echo "System restart is recommended for $action to take effect."
+    [ $action == "uninstal" ] || echo "You can now manually start/stop auth-daemons 'ironport' and 'fortigate'"
     echo -n "Restart now? (y/n): "
     read -n1 answer
     while [ "${answer,,}" != "y" ] && [ "${answer,,}" != "n" ]; do
