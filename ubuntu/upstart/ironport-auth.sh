@@ -2,6 +2,10 @@
 
 trap logout 1 2 3 9 15 19 20
 
+LOGFILE="/var/log/iitk-ironport.log"
+[ -f $LOGFILE ] || touch $LOGFILE
+[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-ironport.log"
+
 log() {
  export ts="`date +[%b\ %e\ %H:%M:%S]`"
  echo $ts $@ >> ${LOGFILE}
@@ -19,10 +23,6 @@ log "Starting ironport-authentication daemon .."
 CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"
 [ -f $CONFIG ] || (logger -sit IronPort "No config file found." && exit 1)
-
-LOGFILE="/var/log/iitk-ironport.log"
-[ -f $LOGFILE ] || touch $LOGFILE
-[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-ironport.log"
 
 export user="`sed -n '1 p' ${CONFIG}`"
 export pass="`sed -n '2 p' ${CONFIG}`"

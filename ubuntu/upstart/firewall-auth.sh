@@ -2,6 +2,10 @@
 
 trap logout 1 2 3 9 15 19 20
 
+LOGFILE="/var/log/iitk-fortigate.log"
+[ -f $LOGFILE ] || touch $LOGFILE
+[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-fortigate.log"
+
 log() {
     export ts="`date +[%b\ %e\ %H:%M:%S]`"
     echo $ts $@ >> $LOGFILE
@@ -13,10 +17,6 @@ log "Starting fortigate-authentication daemon .."
 CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"
 [ -f $CONFIG ] || (logger -sit Fortigate "No config file found." && exit 1)
-
-LOGFILE="/var/log/iitk-fortigate.log"
-[ -f $LOGFILE ] || touch $LOGFILE
-[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-fortigate.log"
 
 username="`sed -n '1 p' ${CONFIG}`"
 password="`sed -n '2 p' ${CONFIG}`"
