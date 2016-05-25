@@ -4,10 +4,13 @@ CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"
 [ -f $CONFIG ] || (logger -sit IronPort "No config file found." && exit 1)
 
+LOGFILE="/var/log/iitk-ironport.log"
+[ -f $LOGFILE ] || touch $LOGFILE
+[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-ironport.log"
+
 export user="`sed -n '1 p' ${CONFIG}`"
 export pass="`sed -n '2 p' ${CONFIG}`"
-# export ip="`sed -n '3 p' ${CONFIG}`"
-export ip="`curl -s http://home.iitk.ac.in/~hrishirt/ip/?clean`"
+export ip="172.22.1.1" # any ironport ip
 
 ([ -z "$user" ] || [ -z "$pass" ] || [ -z "$ip" ]) &&  (logger -sit IronPort "Invalid config." && exit 1)
 
@@ -20,53 +23,56 @@ export refresh='5'
 
 log() {
  export ts="`date +[%b\ %e\ %H:%M:%S]`"
- echo $ts $@
+ echo $ts $@ >> ${LOGFILE}
  logger -t IronPort $@
 }
 
 while true; do
-  refresh=5
+    refresh=5
 
-  # Cisco Authentication
-  curl -s --form "sid=0" --form "login='Log In Now'" $refurl  > /dev/null 2> /dev/null
+    # Cisco Authentication
+    curl -s --form "sid=0" --form "login='Log In Now'" $refurl  > /dev/null 2> /dev/null
+    sleep 1
 
-  sleep 1
+    cisco=$(
+        curl -s --form "username=$user" --form "password=$pass" --form "Login=Continue" --referer $refurl $authurl --stderr /dev/null
+    )
 
-  curl -s --form "username=$user" --form "password=$pass" --form "Login=Continue" --referer $refurl $authurl > /tmp/auth 2> /dev/null
+    if [ "`echo $cisco | grep 'You are logged in'`" ]; then
+        log "Auth succesful."
+    else 
+        log "Auth failed."
+        refresh=1
+    fi 
+    sleep 1
 
-  if [ "`cat /tmp/auth | grep 'You are logged in'`" ]; then
-     log "Auth succesful."
-  else 
-       log "Auth failed."
-       refresh=1
-  fi 
-  sleep 1
-
-  # HTTPS Authentication
-  curl -s --insecure --user "${user}:${pass}" $authurl1 > /tmp/auth1 2> /dev/null
-  curl -s --insecure --user "${user}:${pass}" $authurl2 > /tmp/auth2 2> /dev/null
-
-  if [ "`cat /tmp/auth1 | grep AUTH_REQUIRED`" ]; then
-    log "Auth1 failed."
-    refresh=1
-  else
-    if [ "`cat /tmp/auth1 | grep 'request is being redirected'`" ]; then
-      log "Auth1 successful."
+    # HTTPS Authentication
+    auth1=$(
+        curl -s --insecure --user "${user}:${pass}" $authurl1 --stderr /dev/null
+    )
+    auth2=$(
+        curl -s --insecure --user "${user}:${pass}" $authurl2 --stderr /dev/null
+    )
+    if [ "`echo $auth1 | grep AUTH_REQUIRED`" ]; then
+        log "Auth1 failed."
+        refresh=1
+    else
+        if [ "`echo $auth1 | grep 'request is being redirected'`" ]; then
+            log "Auth1 successful."
+        fi
     fi
-  fi
 
-  if [ "`cat /tmp/auth2 | grep AUTH_REQUIRED`" ]; then
-    log "Auth2 failed."
-    refresh=1
-  else
-    if [ "`cat /tmp/auth2 | grep 'request is being redirected'`" ]; then
-      log "Auth2 successful."
+    if [ "`echo $auth2 | grep AUTH_REQUIRED`" ]; then
+        log "Auth2 failed."
+        refresh=1
+    else
+        if [ "`echo $auth2 | grep 'request is being redirected'`" ]; then
+            log "Auth2 successful."
+        fi
     fi
-  fi
 
-#  export futuredate="`date -D '%s' +'[%H:%M:%S]' -d $((\`date +%s\` + ${refresh}*60))`"
-  export futuredate="`date +[%H:%M:%S] --date="${refresh}min"`"
-  log "Refreshing at '${futuredate}'"
-  sleep $(( ${refresh} * 60 ))
-
+    #  export futuredate="`date -D '%s' +'[%H:%M:%S]' -d $((\`date +%s\` + ${refresh}*60))`"
+    export futuredate="`date +[%H:%M:%S] --date="${refresh}min"`"
+    log "Refreshing at '${futuredate}'"
+    sleep $(( ${refresh} * 60 ))
 done

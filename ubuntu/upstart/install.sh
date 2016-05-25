@@ -29,11 +29,10 @@ get_info() {
     read user
     echo -n "Enter IITK password: "
     read -s pass
-#    export ip="`curl -s http://home.iitk.ac.in/~hrishirt/ip/?clean`"
-#    echo "Machine IP: $ip"
-#    echo -n "Is this IP correct? (y/n): "
+    echo
     echo -n "Is this information correct? (y/n): "
     read -n1 answer
+    
     while [ "${answer,,}" != "y" ] && [ "${answer,,}" != "n" ]; do
         read -n1 answer
         echo -en '\b'
@@ -42,28 +41,26 @@ get_info() {
     echo
     if [ "${answer,,}" == "n" ]; then
         get_info
-#        echo -n "Enter Machine IP: "
-#        read ip
     fi
-#    echo -en "${user}\n${pass}\n${ip}" > $HOME/.iitk-config
     echo -en "${user}\n${pass}" > $HOME/.iitk-config
 }
 
-copy_user_files() {
+user_install() {
     [ -d $HOME/bin ] || mkdir $HOME/bin
 
     chmod -v 755 *-auth.sh
-    cp *-auth.sh *.conf $HOME/bin
+    cp -v *-auth.sh *.conf $HOME/bin
     chmod -v 644 *
-
-#    sed -i "s:IITK_USERNAME:$user:" $HOME/bin/firewall-auth.sh $HOME/bin/ironport-auth.sh
-#    sed -i "s:IITK_PASSWORD:$pass:" $HOME/bin/firewall-auth.sh $HOME/bin/ironport-auth.sh
-#    sed -i "s:MACHINE_IP:$ip:" $HOME/bin/ironport-auth.sh
 }
 
 install() {
     sudo cp -v $HOME/bin/firewall-auth.sh /usr/sbin/iitk-fortigate
     sudo cp -v $HOME/bin/ironport-auth.sh /usr/sbin/iitk-ironport
+
+    echo "gcc -o daemonize daemonize.c"
+    gcc -o daemonize daemonize.c
+    sudo cp -v daemonize /usr/sbin/
+    rm daemonize
 
     sudo cp -v *conf /etc/init/
 
@@ -73,7 +70,7 @@ install() {
 }
 
 uninstall() {
-    sudo rm -v /usr/sbin/iitk-fortigate /usr/sbin/iitk-ironport /etc/init/fortigate.conf /etc/init/ironport.conf
+    sudo rm -v /usr/sbin/iitk-fortigate /usr/sbin/iitk-ironport /usr/sbin/daemonize /etc/init/fortigate.conf /etc/init/ironport.conf
     sudo rm -v $HOME/bin/firewall-auth.sh $HOME/bin/ironport.sh
     sudo rm -v $HOME/.iitk-config /usr/share/iitk-auth/config
 }
@@ -102,7 +99,7 @@ case $1 in
     "-i")
         check_access
         get_info
-        copy_user_files
+        user_install
         install
         restart_system
         ;;

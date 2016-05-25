@@ -4,11 +4,14 @@ CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"
 [ -f $CONFIG ] || (logger -sit Fortigate "No config file found." && exit 1)
 
+LOGFILE="/var/log/iitk-fortigate.log"
+[ -f $LOGFILE ] || touch $LOGFILE
+[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-fortigate.log"
+
 username="`sed -n '1 p' ${CONFIG}`"
 password="`sed -n '2 p' ${CONFIG}`"
 
 ([ -z "$username" ] || [ -z "$password" ]) &&  (logger -sit Fortigate "Invalid config." && exit 1)
-
 
 google="http://216.58.220.3"
 curl_opts="-k -m3 -s --stderr /dev/null"
@@ -18,7 +21,7 @@ trap logout 1 2 3 15
 
 log() {
     export ts="`date +[%b\ %e\ %H:%M:%S]`"
-    echo $ts $@
+    echo $ts $@ >> $LOGFILE
     logger -t Fortigate $@
  }
  
@@ -102,7 +105,7 @@ do
             ;;
         "login")
             log "Already logged in"
-            sleep 60 & wait $!
+            sleep 300 & wait $!
             login
             ;;
         "badauth")
