@@ -12,7 +12,7 @@ git remote add bitbucket git@bitbucket.org:hrishikeshrt/ironport.git
 #
 
 git remote rename origin bitbucket
-git remote add git@github.com:hrishikeshrt/ironport.git
+git remote add github git@github.com:hrishikeshrt/ironport.git
 
 ### Push & Pull
 
