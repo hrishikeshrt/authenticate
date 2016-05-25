@@ -6,7 +6,8 @@ CONFIG="$HOME/.iitk-config"
 
 export user="`sed -n '1 p' ${CONFIG}`"
 export pass="`sed -n '2 p' ${CONFIG}`"
-export ip="`sed -n '3 p' ${CONFIG}`"
+# export ip="`sed -n '3 p' ${CONFIG}`"
+export ip="`curl -s http://home.iitk.ac.in/~hrishirt/ip/?clean`"
 
 ([ -z "$user" ] || [ -z "$pass" ] || [ -z "$ip" ]) &&  (logger -sit IronPort "Invalid config." && exit 1)
 

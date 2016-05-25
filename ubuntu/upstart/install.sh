@@ -29,9 +29,10 @@ get_info() {
     read user
     echo -n "Enter IITK password: "
     read -s pass
-    export ip="`curl -s http://home.iitk.ac.in/~hrishirt/ip/?clean`"
-    echo "Machine IP: $ip"
-    echo -n "Is this IP correct? (y/n): "
+#    export ip="`curl -s http://home.iitk.ac.in/~hrishirt/ip/?clean`"
+#    echo "Machine IP: $ip"
+#    echo -n "Is this IP correct? (y/n): "
+    echo -n "Is this information correct? (y/n): "
     read -n1 answer
     while [ "${answer,,}" != "y" ] && [ "${answer,,}" != "n" ]; do
         read -n1 answer
@@ -40,10 +41,12 @@ get_info() {
                                     
     echo
     if [ "${answer,,}" == "n" ]; then
-        echo -n "Enter Machine IP: "
-        read ip
+        get_info
+#        echo -n "Enter Machine IP: "
+#        read ip
     fi
-    echo -en "${user}\n${pass}\n${ip}" > $HOME/.iitk-config
+#    echo -en "${user}\n${pass}\n${ip}" > $HOME/.iitk-config
+    echo -en "${user}\n${pass}" > $HOME/.iitk-config
 }
 
 copy_user_files() {
