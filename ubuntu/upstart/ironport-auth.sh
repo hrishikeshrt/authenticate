@@ -2,11 +2,13 @@
 
 CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"
-[ -f $CONFIG ] || (logger -sit IronPort "No config file found." > /dev/stderr && exit 1)
+[ -f $CONFIG ] || (logger -sit IronPort "No config file found." && exit 1)
 
 export user="`sed -n '1 p' ${CONFIG}`"
 export pass="`sed -n '2 p' ${CONFIG}`"
 export ip="`sed -n '3 p' ${CONFIG}`"
+
+([ -z "$user" ] || [ -z "$pass" ] || [ -z "$ip" ]) &&  (logger -sit IronPort "Invalid config." && exit 1)
 
 export refurl='http://authenticate.iitk.ac.in/netaccess/connstatus.html'
 export authurl='http://authenticate.iitk.ac.in/netaccess/loginuser.html'

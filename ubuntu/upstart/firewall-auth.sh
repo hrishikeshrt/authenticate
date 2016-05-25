@@ -7,6 +7,8 @@ CONFIG="$HOME/.iitk-config"
 username="`sed -n '1 p' ${CONFIG}`"
 password="`sed -n '2 p' ${CONFIG}`"
 
+([ -z "$username" ] || [ -z "$password" ]) &&  (logger -sit Fortigate "Invalid config." && exit 1)
+
 
 google="http://216.58.220.3"
 curl_opts="-k -m3 -s --stderr /dev/null"
