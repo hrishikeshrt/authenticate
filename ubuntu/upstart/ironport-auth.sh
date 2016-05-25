@@ -1,10 +1,13 @@
 #!/bin/sh
 
-trap logout 1 2 3 9 15 19 20
+trap logout 1 2 3 9 15
 
 LOGFILE="/var/log/iitk-ironport.log"
 [ -f $LOGFILE ] || touch $LOGFILE
 [ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-ironport.log"
+
+LOGSIZE=$(du $LOGFILE | awk '{ print $1 }')
+[ $LOGSIZE -lt 1024 ]  || ( mv ${LOGFILE} ${LOGFILE}.old && touch $LOGFILE )
 
 log() {
  export ts="`date +[%b\ %e\ %H:%M:%S]`"
@@ -20,6 +23,7 @@ logout() {
 
 log "Starting ironport-authentication daemon .."
 
+# login details
 CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"
 [ -f $CONFIG ] || (logger -sit IronPort "No config file found." && exit 1)
@@ -35,7 +39,7 @@ export authurl='http://authenticate.iitk.ac.in/netaccess/loginuser.html'
 export authurl1='https://ironport1.iitk.ac.in/B0001D0000N0000N0000F0000S0000R0004/'${ip}'/http://www.google.com/'
 export authurl2='https://ironport2.iitk.ac.in/B0001D0000N0000N0000F0000S0000R0004/'${ip}'/http://www.google.com/'
 
-export refresh='5'
+export refresh='4'
 
 while true; do
     refresh=5

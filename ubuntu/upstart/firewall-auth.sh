@@ -1,10 +1,13 @@
 #!/bin/sh
 
-trap logout 1 2 3 9 15 19 20
+trap logout 1 2 3 9 15
 
 LOGFILE="/var/log/iitk-fortigate.log"
 [ -f $LOGFILE ] || touch $LOGFILE
 [ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-fortigate.log"
+
+LOGSIZE=$(du $LOGFILE | awk '{ print $1 }')
+[ $LOGSIZE -lt 1024 ]  || ( mv ${LOGFILE} ${LOGFILE}.old && touch $LOGFILE )
 
 log() {
     export ts="`date +[%b\ %e\ %H:%M:%S]`"
