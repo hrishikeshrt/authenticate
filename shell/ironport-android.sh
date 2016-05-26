@@ -5,40 +5,21 @@ trap logout 1 2 3 9 15
 log() {
  export ts="`date +[%b\ %e\ %H:%M:%S]`"
  echo $ts $@ >> ${LOGFILE}
- logger -t IronPort $@
 }
 
 logout() {
     curl -s --form "logout='Log Out Now'" $refurl  > /dev/null 2> /dev/null
     log "Logged out."
-    rm $PIDFILE
     exit 0
 }
 
-# script (daemon) name
-NAME=$(basename $0)
 
-# check if log file is in place and of adequate size
-LOGFILE="/var/log/iitk-ironport.log"
-[ -f $LOGFILE ] || touch $LOGFILE
-[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-ironport.log"
+LOGFILE=""
 
 LOGSIZE=$(du $LOGFILE | awk '{ print $1 }')
 [ $LOGSIZE -lt 1024 ]  || ( mv ${LOGFILE} ${LOGFILE}.old && touch $LOGFILE )
 
-# get pid
-oldPID=""
-myPID=`echo $$`
-
-PIDDIR="/var/run/"
-[ -w ${PIDDIR} ] || PIDDIR="${HOME}"
-PIDFILE="${PIDDIR}/${NAME}.pid"
-
-[ ! -f ${PIDFILE} ] || oldPID=$(cat $PIDFILE)
-[ -z "${oldPID}" ] || ((log "Error: Daemone with PID ${oldPID} already running. ($myPID)") && exit 1)
-echo ${myPID} > ${PIDFILE}
-
-log "Starting ironport-authentication daemon .. ($myPID)"
+log "Starting ironport-authentication daemon .. "
 
 export ip="172.22.1.1" # any ironport ip
 export refurl='http://authenticate.iitk.ac.in/netaccess/connstatus.html'

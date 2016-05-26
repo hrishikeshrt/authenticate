@@ -55,10 +55,10 @@ export authurl='http://authenticate.iitk.ac.in/netaccess/loginuser.html'
 export authurl1='https://ironport1.iitk.ac.in/B0001D0000N0000N0000F0000S0000R0004/'${ip}'/http://www.google.com/'
 export authurl2='https://ironport2.iitk.ac.in/B0001D0000N0000N0000F0000S0000R0004/'${ip}'/http://www.google.com/'
 
-export refresh='4'
+export loop_every=4
 
 while true; do
-    refresh=5
+    refresh=${loop_every}
 
     # Cisco Authentication
     curl -s --form "sid=0" --form "login='Log In Now'" $refurl  > /dev/null 2> /dev/null
