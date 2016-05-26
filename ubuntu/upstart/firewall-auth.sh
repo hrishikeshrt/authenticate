@@ -12,9 +12,9 @@ log() {
 NAME=$(basename $0)
 
 # check if log file is in place and of adequate size
-LOGFILE="/var/log/iitk-ironport.log"
+LOGFILE="/var/log/iitk-fortigate.log"
 [ -f $LOGFILE ] || touch $LOGFILE
-[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-ironport.log"
+[ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-fortigate.log"
 
 LOGSIZE=$(du $LOGFILE | awk '{ print $1 }')
 [ $LOGSIZE -lt 1024 ]  || ( mv ${LOGFILE} ${LOGFILE}.old && touch $LOGFILE )
@@ -29,8 +29,9 @@ PIDFILE="${PIDDIR}/${NAME}.pid"
 
 [ ! -f ${PIDFILE} ] || oldPID=$(cat $PIDFILE)
 [ -z "$oldPID" ] || ((log "Error: Daemone with PID ${oldPID} already running. ($myPID)") && exit 1)
+echo ${myPID} > ${PIDFILE}
 
-log "Starting fortigate-authentication daemon .."
+log "Starting fortigate-authentication daemon ..($myPID)"
 
 CONFIG="$HOME/.iitk-config"
 [ -f $CONFIG ] || CONFIG="/usr/share/iitk-auth/config"

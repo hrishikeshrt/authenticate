@@ -35,7 +35,7 @@ PIDFILE="${PIDDIR}/${NAME}.pid"
 
 [ ! -f ${PIDFILE} ] || oldPID=$(cat $PIDFILE)
 [ -z "$oldPID" ] || ((log "Error: Daemone with PID ${oldPID} already running. ($myPID)") && exit 1)
-
+echo ${myPID} > ${PIDFILE}
 
 log "Starting ironport-authentication daemon .. ($myPID)"
 
