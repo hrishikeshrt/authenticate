@@ -72,9 +72,9 @@ while true; do
         log "Auth succesful."
     else 
         if [ "`echo $cisco | grep "Credentials Rejected"`" ]; then
-            log "Error: Credentials rejected."
+            log "Error: Credentials rejected. (auth)"
         else
-            log "Error: Something went wrong."
+            log "Error: Something went wrong. (auth)"
             refresh=1
         fi
     fi 
@@ -94,7 +94,7 @@ while true; do
         if [ "`echo $auth1 | grep 'request is being redirected'`" ]; then
             log "Auth1 successful."
         else
-            log "Error: `echo $auth1 | grep 'Notification: ' | grep -v '<title>'`"
+            log "Error: `echo $auth1 | grep 'Notification: ' | grep -v '<title>'` (auth1)"
         fi
     fi
 
@@ -105,7 +105,7 @@ while true; do
         if [ "`echo $auth2 | grep 'request is being redirected'`" ]; then
             log "Auth2 successful."
         else
-            log "Error: `echo $auth2 | grep 'Notification: ' | grep -v '<title>'`"
+            log "Error: `echo $auth2 | grep 'Notification: ' | grep -v '<title>'` (auth2)"
         fi
     fi
 
