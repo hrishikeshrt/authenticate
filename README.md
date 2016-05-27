@@ -31,6 +31,7 @@ Put your public-key of PC that you want to access phone from, into your phone's 
 
 - ``apt install openssh``
 - ``cat {path_to_pubkey} >> ~/.ssh/authorized_keys``
+- ``sshd``
 
 Now, from your PC, ``ssh -p 8022 {phone_ip}``.
 
