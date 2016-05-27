@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/system/bin/sh
 
-trap logout 1 2 3 9 15
+trap logout 1 2 3 9 12 15 19 20
 
 log() {
  export ts="`date +[%b\ %e\ %H:%M:%S]`"
@@ -10,6 +10,7 @@ log() {
 logout() {
     curl -s --form "logout='Log Out Now'" $refurl  > /dev/null 2> /dev/null
     log "Logged out."
+    rm ${PIDFILE}
     exit 0
 }
 

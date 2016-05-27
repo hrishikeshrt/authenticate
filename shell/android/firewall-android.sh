@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/system/bin/sh
 
-trap logout 1 2 3 9 15
+trap logout 1 2 3 9 12 15 19 20
 
 log() {
     export ts="`date +[%b\ %e\ %H:%M:%S]`"
@@ -28,7 +28,7 @@ if [ ! -z "${oldPID}" ]; then
 fi        
 echo ${myPID} > ${PIDFILE}
 
-log "Starting fortigate-authentication daemon .. "
+log "Starting fortigate-authentication daemon .. (${myPID})"
 
 username=""
 password=""
