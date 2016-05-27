@@ -8,17 +8,23 @@
 
 ## Shell Scripts
 
-### Bash Script for Ironport Authentication
-- cp shell/ironport.sh {somewhere/in/path}
+### Bash Script for Ironport Authentication (old)
+- ``cp shell/ironport.sh {somewhere/in/path}``
 
 ### Router suitable versions
-- cp shell/*-router.sh {somewhere/in/path}
+Tested with TP-Link WR841N router. Needs ``curl`` installed.
+
+Modified version of original fortigate-gateway shell script by [vikraman](https://github.com/vikraman/firewall-auth-sh)
+
+- ``cp shell/*-router.sh {somewhere/in/path}``
 
 ### Android
 This will require you to have some sort of terminal emulator available. 
+ 
 **Termux** is possibly the best terminal emulator around [Termux on Google Play](https://play.google.com/store/apps/details?id=com.termux).
-``start_auth.sh`` and ``kill_auth.sh`` can invoke and kill authentication daemons.
-``start_auth.sh`` assumes that your ``-android.sh`` scripts are located in ``${HOME}/bin``
+
+- ``start_auth.sh`` and ``kill_auth.sh`` can invoke and kill authentication daemons.
+- ``start_auth.sh`` assumes that your ``-android.sh`` scripts are located in ``${HOME}/bin``
 
 ### Getting SSH Access to your phone with Termux 
 Put your public-key of PC that you want to access phone from, into your phone's storage somewhre.
@@ -28,13 +34,13 @@ Put your public-key of PC that you want to access phone from, into your phone's 
 
 Now, from your PC, ``ssh -p 8022 {phone_ip}``.
 
-## Daemon
+## As Ubuntu daemons
 
 This is based on ubuntu's upstart
 
 ### Install
-- cd ubuntu/upstart
-- chmod +x install.sh
-- ./install.sh -i
+- ``cd ubuntu/upstart``
+- ``chmod +x install.sh``
+- ``./install.sh -i``
 
-After this, you can start/stop services using "sudo start ironport", "sudo stop fortigate" etc. (initctl)
+After this, you can start/stop services using ``sudo start ironport``, ``sudo stop fortigate`` etc. (``initctl``)
