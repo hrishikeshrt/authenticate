@@ -4,15 +4,29 @@ trap logout 1 2 3 9 15
 
 log() {
     export ts="`date +[%b\ %e\ %H:%M:%S]`"
-    echo $ts $@ >> $LOGFILE
+    echo $ts $@ >> ${LOGFILE}
 }
 
 
-LOGFILE=""
+LOGFILE="${HOME}/fortigate.log"
 [ -f $LOGFILE ] || touch $LOGFILE
 
-LOGSIZE=$(du $LOGFILE | awk '{ print $1 }')
+LOGSIZE=$(du $LOGFILE | busybox awk '{ print $1 }')
 [ $LOGSIZE -lt 1024 ]  || ( mv ${LOGFILE} ${LOGFILE}.old && touch $LOGFILE )
+
+# get pid
+oldPID=""
+myPID=`echo $$`
+
+PIDDIR="${HOME}"
+PIDFILE="${PIDDIR}/fortigate.pid"
+
+[ ! -f ${PIDFILE} ] || oldPID=$(cat $PIDFILE)
+if [ ! -z "${oldPID}" ]; then
+    log "Error: Daemone with PID ${oldPID} already running. ($myPID)"
+    exit 1        
+fi        
+echo ${myPID} > ${PIDFILE}
 
 log "Starting fortigate-authentication daemon .. "
 

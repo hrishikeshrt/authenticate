@@ -14,12 +14,27 @@ logout() {
 }
 
 
-LOGFILE=""
+LOGFILE="${HOME}/ironport.log"
+[ -f ${LOGFILE} ] || touch ${LOGFILE}
 
-LOGSIZE=$(du $LOGFILE | awk '{ print $1 }')
+LOGSIZE=$(du $LOGFILE | busybox awk '{ print $1 }')
 [ $LOGSIZE -lt 1024 ]  || ( mv ${LOGFILE} ${LOGFILE}.old && touch $LOGFILE )
 
-log "Starting ironport-authentication daemon .. "
+# get pid
+oldPID=""
+myPID=`echo $$`
+
+PIDDIR="${HOME}"
+PIDFILE="${PIDDIR}/ironport.pid"
+
+[ ! -f ${PIDFILE} ] || oldPID=$(cat $PIDFILE)
+if [ ! -z "${oldPID}" ]; then
+    log "Error: Daemone with PID ${oldPID} already running. ($myPID)"
+    exit 1
+fi
+echo ${myPID} > ${PIDFILE}
+
+log "Starting ironport-authentication daemon .. ($myPID)"
 
 export ip="172.22.1.1" # any ironport ip
 export refurl='http://authenticate.iitk.ac.in/netaccess/connstatus.html'
@@ -83,8 +98,7 @@ while true; do
         fi
     fi
 
-    export futuredate="`date -D '%s' +'[%H:%M:%S]' -d $((\`date +%s\` + ${refresh}*60))`"
-    log "Refreshing at '${futuredate}'"
+    log "Refreshing in ${refresh} min"
     sleep $(( ${refresh} * 60 ))
 
 done
