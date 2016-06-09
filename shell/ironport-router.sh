@@ -24,18 +24,23 @@ LOGFILE="/var/log/iitk-ironport.log"
 [ -w $LOGFILE ] || LOGFILE="/tmp/`whoami`-ironport.log"
 
 LOGSIZE=$(du $LOGFILE | awk '{ print $1 }')
-[ $LOGSIZE -lt 1024 ]  || ( mv ${LOGFILE} ${LOGFILE}.old && touch $LOGFILE )
+[ $LOGSIZE -lt 512 ]  || ( mv ${LOGFILE} ${LOGFILE}.old && touch $LOGFILE )
 
 # get pid
 oldPID=""
 myPID=`echo $$`
 
-PIDDIR="/var/run/"
+PIDDIR="/var/run"
 [ -w ${PIDDIR} ] || PIDDIR="${HOME}"
 PIDFILE="${PIDDIR}/${NAME}.pid"
 
 [ ! -f ${PIDFILE} ] || oldPID=$(cat $PIDFILE)
-[ -z "${oldPID}" ] || ((log "Error: Daemone with PID ${oldPID} already running. ($myPID)") && exit 1)
+
+if [ ! -z "${oldPID}" ]; then
+    log "Error: Daemon with PID ${oldPID} already running. ($myPID)"
+    exit 1
+fi
+
 echo ${myPID} > ${PIDFILE}
 
 log "Starting ironport-authentication daemon .. ($myPID)"
