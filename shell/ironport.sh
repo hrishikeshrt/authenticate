@@ -53,8 +53,8 @@ fi
 export ip="`curl -s http://home.iitk.ac.in/~hrishirt/ip/?clean`"
 export refurl='http://authenticate.iitk.ac.in/netaccess/connstatus.html'
 export authurl='http://authenticate.iitk.ac.in/netaccess/loginuser.html'
-export authurl1='https://ironport1.iitk.ac.in/B0001D0000N0000N0000F0000S0000R0004/'${ip}'/http://www.google.com/'
-export authurl2='https://ironport2.iitk.ac.in/B0001D0000N0000N0000F0000S0000R0004/'${ip}'/http://www.google.com/'
+export authurl1='https://ironport1.iitk.ac.in/B0001D0000N0000N0000F0000S0000R0004/'${ip}'/http://www.google.co.in/'
+export authurl2='https://ironport2.iitk.ac.in/B0001D0000N0000N0000F0000S0000R0004/'${ip}'/http://www.google.co.in/'
 
 export user="`head -n1 ${authfile}`"
 export pass="`tail -n1 ${authfile}`"
