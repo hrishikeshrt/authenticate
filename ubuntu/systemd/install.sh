@@ -67,9 +67,15 @@ install() {
     sudo mkdir -pv /usr/share/iitk-auth/
     sudo cp -v $HOME/.iitk-config /usr/share/iitk-auth/config
     sudo chmod 600 /usr/share/iitk-auth/config
+
+    sudo systemctl enable ironport.service
+    sudo systemctl enable fortigate.service
 }
 
 uninstall() {
+    sudo systemctl disable ironport.service
+    sudo systemctl disable fortigate.service
+
     sudo rm -v /usr/sbin/iitk-fortigate /usr/sbin/iitk-ironport /usr/sbin/daemonize /lib/systemd/system/fortigate.service /lib/systemd/system/ironport.service
     sudo rm -v $HOME/bin/firewall-auth.sh $HOME/bin/ironport.sh
     sudo rm -v $HOME/.iitk-config /usr/share/iitk-auth/config
