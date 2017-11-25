@@ -1,0 +1,10 @@
+[Unit]
+Description=IITK Ironport Authenticate
+
+[Service]
+Type=forking
+Restart=on-failure
+ExecStart=/usr/sbin/daemonize /usr/sbin/iitk-ironport
+
+[Install]
+WantedBy=multi-user.target

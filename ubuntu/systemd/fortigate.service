@@ -1,0 +1,10 @@
+[Unit]
+Description=IITK Fortigate Authenticate
+
+[Service]
+Type=forking
+Restart=on-failure
+ExecStart=/usr/sbin/daemonize /usr/sbin/iitk-fortigate
+
+[Install]
+WantedBy=multi-user.target

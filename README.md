@@ -37,11 +37,12 @@ Now, from your PC, ``ssh -p 8022 {phone_ip}``.
 
 ## As Ubuntu daemons
 
-This is based on ubuntu's upstart
+This is based on ubuntu's upstart / systemd
 
 ### Install
-- ``cd ubuntu/upstart``
+- ``cd ubuntu/upstart`` OR ``cd ubuntu/upstart``
 - ``chmod +x install.sh``
 - ``./install.sh -i``
 
-After this, you can start/stop services using ``sudo start ironport``, ``sudo stop fortigate`` etc. (``initctl``)
+For upstart, you can start/stop services using ``sudo start ironport``, ``sudo stop fortigate`` etc. (``initctl``)
+For systemd, you can start/stop services using ``sudo service ironport start``, ``sudo service fortigate stop`` etc. (``systemctl``)
