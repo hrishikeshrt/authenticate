@@ -48,9 +48,9 @@ get_info() {
 user_install() {
     [ -d $HOME/bin ] || mkdir $HOME/bin
 
-    chmod -v 755 *-auth.sh
-    cp -v *-auth.sh *.service $HOME/bin
-    chmod -v 644 *
+    chmod -v +x *-auth.sh
+    cp -v *-auth.sh $HOME/bin
+    chmod -v -x *
 }
 
 install() {
@@ -85,7 +85,7 @@ restart_system() {
     action="uninstall"
     [ $1 ] || action="install"
     echo "System restart is recommended for $action to take effect."
-    [ $action == "uninstal" ] || echo "You can now manually start/stop auth-daemons 'ironport' and 'fortigate'"
+    [ $action == "uninstall" ] || echo "You can now manually start/stop auth-daemons 'ironport' and 'fortigate'"
     echo -n "Restart now? (y/n): "
     read -n1 answer
     while [ "${answer,,}" != "y" ] && [ "${answer,,}" != "n" ]; do
