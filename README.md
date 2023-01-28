@@ -1,6 +1,14 @@
 # IITK ironport and fortigate Authentication
 
-### Greasemonkey Script for IronPort Authentication at IIT Kanpur
+## Python Script
+
+Python script has been, and will continue to be, available at Gist: https://gist.github.com/hrishikeshrt/cc71b97077ab1018c4c9bbe22b85c2fa
+
+```
+python3 authenticator.py
+```
+
+## Greasemonkey Script for IronPort Authentication at IIT Kanpur
 
 * You need following extensions to use this script
 - **Firefox**: [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
