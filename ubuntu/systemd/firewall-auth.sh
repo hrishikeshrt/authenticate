@@ -42,23 +42,30 @@ password="`sed -n '2 p' ${CONFIG}`"
 
 ([ -z "$username" ] || [ -z "$password" ]) &&  (logger -sit Fortigate "Invalid config." && exit 1)
 
-google="http://216.58.220.3"
-curl_opts="-k -m3 -s --stderr /dev/null"
+http_url="http://1.1.1.1"
+curl_opts="-k -s --stderr /dev/null"
 
 login() {
     fgt_redirect=$(
-        curl ${curl_opts} --max-redirs 0 -D- ${google}
+        curl ${curl_opts} --max-redirs 0 -D- ${http_url}
     )
     if [ -z "${fgt_redirect}" ];
     then
         state="fail"
-    elif [ -z "$(echo ${fgt_redirect} | grep "HTTP\/1.1 303 See Other")" ];
+    elif [ -z "$(echo ${fgt_redirect} | grep "HTTP\/1.1 200 OK")" ];
     then
-        state="login"
+        # status "200 OK" not found
+        if [ -z "$(echo ${fgt_redirect} | grep "HTTP\/1.1 301 Moved Permanently")" ];
+        then
+            # status "301 Moved Permanently" not found
+            state="fail"
+        else
+            state="login"
+        fi
     else
         fgt_auth_url=$(
             echo "${fgt_redirect}" |
-            sed -n -e 's/.*Location: \(.*\).*/\1/p' |
+            sed -n -e 's/.*window.location="\(.*\)".*/\1/p' |
             tr -d '\r\n'
         )
         fgt_auth_resp=$(
@@ -75,7 +82,7 @@ login() {
         )
         fgt_keepalive_url=$(
             echo "${fgt_post_resp}" |
-            sed -n -e 's/.*location.href="\([^"]\+\).*/\1/p' |
+            sed -n -e 's/.*window.location="\(.*\)".*/\1/p' |
             tr -d '\r\n'
         )
         if [ -z "${fgt_keepalive_url}" ];
@@ -126,12 +133,12 @@ do
             ;;
         "login")
             log "Already logged in"
-            sleep 300 & wait $!
+            sleep 240 & wait $!
             login
             ;;
         "badauth")
             log "Bad credentials"
-            sleep 240 & wait $!
+            sleep 180 & wait $!
             login
             ;;
         "retry")
@@ -141,7 +148,7 @@ do
             ;;
         "keepalive")
             log "Keeping alive"
-            sleep 300 & wait $!
+            sleep 240 & wait $!
             keepalive
             ;;
         *)
